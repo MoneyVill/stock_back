@@ -14,16 +14,16 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Api(tags = "유저 API")
+//@Api(tags = "유저 API")
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping()
     @ApiOperation(value = "회원가입을 합니다.", notes = "")
-    public ResponseEntity<ResultDto<Boolean>> signUp(@RequestBody UsersRegisterReqDto usersRegisterReqDto) {
+    public ResponseEntity<ResultDto<Boolean>> signUp(@RequestBody UsersRegisterReqDto usersRegisterReqDto) {;
         userService.createUser(usersRegisterReqDto);
 
         return ResponseEntity.ok().body(ResultDto.ofSuccess());
@@ -41,7 +41,7 @@ public class UserController {
     @ApiOperation(value = "계정 중복확인을 합니다.", notes = "")
     public ResponseEntity<ResultDto<Boolean>> checkAccount(@PathVariable String account) {
         Boolean checkAccount = Boolean.TRUE;
-        log.info("@@@@@@@@@@@@@");
+//        log.info("@@@@@@@@@@@@@");
         return ResponseEntity.ok().body(ResultDto.ofSuccess());
     }
 
