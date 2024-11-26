@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService{
     private final BankRepository bankRepository;
     private final AssetRepository assetRepository;
     private final UserAssetLocationRepository userAssetLocationRepository;
-    private final static String PROFILE_IMAGE_PATH = "https://modoostock.s3.ap-northeast-2.amazonaws.com/images/navImg/";
+    private final static String PROFILE_IMAGE_PATH = "src/main/resources/static/";
 
     @Override
     public UserEntity getUserById(Long id) {
@@ -94,18 +94,18 @@ public class UserServiceImpl implements UserService{
 
         //확률
         Random random=new Random();
-        int rd =random.nextInt(6);
+        int rd =random.nextInt(4);
 
-        String[] imageArray = {"f1.png", "f6.png", "f7.png", "m3.png", "m4.png", "m9.png"};
-
-        userRepository.save(usersRegisterReqDto.toEntity(PROFILE_IMAGE_PATH + imageArray[rd]));
+        String[] imageArray = {"chef.png", "cleaner.png", "designer.png", "doctor.png"};
+        UserEntity userEntity = usersRegisterReqDto.toEntity(PROFILE_IMAGE_PATH + imageArray[rd]);
+        userRepository.save(userEntity);
 
         // 기본 base asset 추가
         AssetEntity asset = assetRepository.findById(351L).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 회원가입한 유저 가져오기
         UserEntity user = getUserByNickname(usersRegisterReqDto.getNickname());
-        
+
         // 회원 가입 시 기본 에셋 추가
         UserAssetLocation userAssetLocation=UserAssetLocation.builder()
                 .asset(asset)
