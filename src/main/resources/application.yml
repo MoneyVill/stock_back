@@ -67,10 +67,10 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/stock
+    url: jdbc:mysql://localhost:3306/modoostock
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: e3pooq^^
+    password: M!Thtl3980@
   data:
     mongodb:
       uri: mongodb+srv://sparta:jungle@cluster0.giqtz.mongodb.net/moneydb?retryWrites=true&w=majority&appName=Cluster0
