@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService{
     private final BankRepository bankRepository;
     private final AssetRepository assetRepository;
     private final UserAssetLocationRepository userAssetLocationRepository;
-    private final static String PROFILE_IMAGE_PATH = "src/main/resources/static/";
+    private final static String PROFILE_IMAGE_PATH = "/images/profile/";
 
     @Override
     public UserEntity getUserById(Long id) {
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService{
         Random random=new Random();
         int rd =random.nextInt(4);
 
-        String[] imageArray = {"chef.png", "cleaner.png", "designer.png", "doctor.png"};
+        String[] imageArray = {"chef.png", "developer.png", "designer.png", "doctor.png", "policeman.png"};
         UserEntity userEntity = usersRegisterReqDto.toEntity(PROFILE_IMAGE_PATH + imageArray[rd]);
         userRepository.save(userEntity);
 
