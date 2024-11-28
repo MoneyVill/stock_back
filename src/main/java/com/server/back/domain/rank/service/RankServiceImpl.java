@@ -62,9 +62,9 @@ public class RankServiceImpl implements  RankService{
      */
     @Transactional
     @CachePut(value = "rank")
-    @Scheduled(cron = "0/30 0 0-23 * * 1-7",zone = "Asia/Seoul")
+    @Scheduled(cron = "0/30 0/1 0/1 * * 1-7",zone = "Asia/Seoul")
     public void calRanking(){
-
+        log.error("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         //랭킹 레퍼지토리 전체 삭제
         rankRepository.deleteAll();
 

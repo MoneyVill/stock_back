@@ -213,7 +213,7 @@ public class SchedulerService {
     }
 
     // 날짜 변경 : 월~토 10시 ~ 22시까지 4분마다 게임 날자 변경
-    @Scheduled(cron = "0/30 0 0-23 * * 1-7")
+    @Scheduled(cron = "0/30 0/1 0-23 * * 1-7")
     public void chart_change(){
         log.info("[schedulerService] market(시즌) gameDate 변경");
         // 현재 진행중인 market 획득

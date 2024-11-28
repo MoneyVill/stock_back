@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService{
     private final BankRepository bankRepository;
     private final AssetRepository assetRepository;
     private final UserAssetLocationRepository userAssetLocationRepository;
-    private final static String PROFILE_IMAGE_PATH = "/images/profile/";
+    private final static String PROFILE_IMAGE_PATH = "images/profile/";
 
     @Override
     public UserEntity getUserById(Long id) {
