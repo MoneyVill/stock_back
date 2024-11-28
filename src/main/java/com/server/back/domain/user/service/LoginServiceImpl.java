@@ -71,7 +71,7 @@ public class LoginServiceImpl implements LoginService{
         authTokenProvider.setHeaderRefreshToken(response, refreshToken);
 
         // refresh token Redis에 저장
-        redisService.setDataExpireMilliseconds("RT:" + user.getId(), refreshToken, authTokenProvider.getExpiration(refreshToken));
+//        redisService.setDataExpireMilliseconds("RT:" + user.getId(), refreshToken, authTokenProvider.getExpiration(refreshToken));
 
         // 하루 첫 로그인 인지 확인
         LocalDateTime startDatetime = LocalDateTime.of(LocalDate.now(), LocalTime.of(0,0,0));
