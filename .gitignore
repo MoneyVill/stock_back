@@ -37,3 +37,6 @@ out/
 ### VS Code ###
 .vscode/
 .env
+
+# Allow application.properties
+!src/main/resources/application.properties
