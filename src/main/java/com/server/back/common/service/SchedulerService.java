@@ -40,65 +40,73 @@ public class SchedulerService {
 
     // 새로운 장(시즌) 생성 : 월, 수, 금 오전 9시에 새로운 장(시즌) 선택
     // - 주식 분할 시기가 있을 경우의 처리 필요
-    @Scheduled(cron = "0 0 9 * * 1,3,5")
+    @Scheduled(cron = "0 0 0 * * 1-7")
     @Transactional
     public void market_select() {
         log.info("[schedulerService] 새로운 market(시즌) 선택");
         // 주식 데이터가 2011년 1월 3일부터 시작
-        LocalDate pivot = LocalDate.of(2011, 1, 1);
+        LocalDate pivot = LocalDate.of(2024, 1, 1);
+        LocalDate start = LocalDate.of(2024, 1, 1);
+        LocalDate end = LocalDate.of(2024, 10, 31);
+        LocalDate gamestart = LocalDate.of(2024, 6, 1);
         // 주식 데이터가 2022년 12월 29일로 끝 -> 360개의 데이터를 얻기 위해
         // 2021년 7월 16일부터 시작해야함.
         // LocalDate end = LocalDate.of(2021, 7, 16);
 
         // 2011년 1월 1일 ~ 2021년 7월 16 : 3849일
-        int MAX_VALUE = 3849;
+//        int MAX_VALUE = 300;
 
         // 랜덤값으로 기준 날짜 계산
-        int rand = (int) Math.round(Math.random() * MAX_VALUE);
-        LocalDate pivotDate = pivot.plusDays(rand);
-
-        // java.sql.Date 타입으로 반환되므로 LocalDate로 변환하여 사용
-        List<Date> marketDate = chartRepository.getMarketDateByDateGreaterThanEqualAndLimit(pivotDate, 360);
-        // log.info(pivotDate+", "+marketDate.toString());
-        if(marketDate.size() == 0){
-            return;
-        }
-        LocalDate start = marketDate.get(0).toLocalDate();
-        LocalDate end = marketDate.get(359).toLocalDate();
+//        int rand = (int) Math.round(Math.random() * MAX_VALUE);
+//        log.info("rand");
+//        log.info("{}",rand);
+//        int rand = 30;
+//        LocalDate pivotDate = pivot.plusDays(rand);
+//        log.info("pivotData");
+//        log.info(pivotDate.toString());
+//        // java.sql.Date 타입으로 반환되므로 LocalDate로 변환하여 사용
+//        List<Date> marketDate = chartRepository.getMarketDateByDateGreaterThanEqualAndLimit(pivotDate, 240);
+//        // log.info(pivotDate+", "+marketDate.toString());
+//        log.info("{}",marketDate.size());
+//        if(marketDate.size() == 0){
+//            return;
+//        }
+//        LocalDate start = marketDate.get(0).toLocalDate();
+//        LocalDate end = marketDate.get(239).toLocalDate();
 
         // 주식 분할이 일어나는 날짜. 시작 초과 종료 이하에 포함될 경우 날짜 다시 선정
-        LocalDate[] impossibleList = new LocalDate[]{LocalDate.of(2013, 3, 22),
-                LocalDate.of(2013, 8, 29),
-                LocalDate.of(2018, 5, 4),
-                LocalDate.of(2018, 10, 12),
-                LocalDate.of(2021, 11, 29),};
-
-        while(true){
-            boolean flag = false;
-            for(LocalDate impossible : impossibleList){
-                if(start.compareTo(impossible) < 0 && end.compareTo(impossible) >= 0){
-                    flag = true;
-                    break;
-                }
-            }
-
-            if(flag){
-                rand = (int) Math.round(Math.random() * MAX_VALUE);
-                pivotDate = pivot.plusDays(rand);
-
-                marketDate = chartRepository.getMarketDateByDateGreaterThanEqualAndLimit(pivotDate, 360);
-                // log.info(pivotDate+", "+marketDate.toString());
-                if(marketDate.size() == 0){
-                    return;
-                }
-                start = marketDate.get(0).toLocalDate();
-                end = marketDate.get(359).toLocalDate();
-            }else break;
-        }
+//        LocalDate[] impossibleList = new LocalDate[]{LocalDate.of(2013, 3, 22),
+//                LocalDate.of(2013, 8, 29),
+//                LocalDate.of(2018, 5, 4),
+//                LocalDate.of(2018, 10, 12),
+//                LocalDate.of(2021, 11, 29),};
+//
+//        while(true){
+//            boolean flag = false;
+//            for(LocalDate impossible : impossibleList){
+//                if(start.compareTo(impossible) < 0 && end.compareTo(impossible) >= 0){
+//                    flag = true;
+//                    break;
+//                }
+//            }
+//
+//            if(flag){
+//                rand = (int) Math.round(Math.random() * MAX_VALUE);
+//                pivotDate = pivot.plusDays(rand);
+//
+//                marketDate = chartRepository.getMarketDateByDateGreaterThanEqualAndLimit(pivotDate, 360);
+//                // log.info(pivotDate+", "+marketDate.toString());
+//                if(marketDate.size() == 0){
+//                    return;
+//                }
+//                start = marketDate.get(0).toLocalDate();
+//                end = marketDate.get(359).toLocalDate();
+//            }else break;
+//        }
 
         // log.info("[schedulerService] new MarketDate : "+start+", "+end);
         // 새로운 장(시즌) 생성
-        MarketEntity marketEntity = marketRepository.save(MarketEntity.builder().startAt(start).endAt(end).gameDate(start).build());
+        MarketEntity marketEntity = marketRepository.save(MarketEntity.builder().startAt(start).endAt(end).gameDate(gamestart).build());
 
         if(marketEntity == null){
             // 생성되지 않았다면 오류 발생
@@ -108,17 +116,25 @@ public class SchedulerService {
         // 전체 회사 목록 중 4가지 선택
         List<CompanyEntity> companyList = companyRepository.findAll();
         Set<Integer> indexSet = new HashSet<>();
-        while(indexSet.size() < 4){
-            rand = (int) (Math.random() * companyList.size());
-            indexSet.add(rand);
-        }
+//        while(indexSet.size() < 4){
+//            int rand = (int) (Math.random() * companyList.size());
+//            indexSet.add(rand);
+//        }
+        indexSet.add(0);
+        indexSet.add(1);
+        indexSet.add(3);
+        indexSet.add(9);
         // log.info("[schedulerService] new indexSet : " + indexSet);
         for(int index : indexSet){
             // 생성할 회사
             CompanyEntity company = companyList.get(index);
             // 게임 기간 동안의 평균가
-            Optional<Long> avgPrice = chartRepository.getAvgPriceEndByDateGreaterThanEqualAndDateLessThanEqualAndCompany(start, end, company.getId());
+            log.info("[schedulerService] company : {}{}" , company.getName(), company.getId());
 
+
+            Optional<Long> avgPrice = chartRepository.getAvgPriceEndByDateGreaterThanEqualAndDateLessThanEqualAndCompany(start, end, company.getId());
+            log.info("{}{}",start,end);
+            log.info("[schedulerService] avgPrice : {}", avgPrice);
             if(avgPrice.isPresent()){
                 // 게임에 사용할 주식(종목) 생성
                 StockEntity stockEntity = stockRepository.save(StockEntity.builder()
@@ -129,15 +145,16 @@ public class SchedulerService {
 
                 if(stockEntity == null){
                     // 생성되지 않았다면 오류 발생
+                    log.error("stockentity안생김");
                     break;
                 }
-                // log.info("[schedulerService] new stock : " + stockEntity.getId());
+                 log.info("[schedulerService] new stock : {}", stockEntity.getId());
             }
         }
     }
 
     // 장 마감 : 화, 목, 토 오후 10시 10분에 모든 주식 처분
-    @Scheduled(cron = "0 10 22 * * 2,4,6")
+    @Scheduled(cron = "0 0 23 * * 1-7")
     public void market_end() {
         log.info("[schedulerService] market(시즌) 마감 - 가지고 있는 모든 주식 판매");
         MarketEntity marketEntity = marketRepository.findTopByOrderByCreatedAtDesc().orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -196,7 +213,7 @@ public class SchedulerService {
     }
 
     // 날짜 변경 : 월~토 10시 ~ 22시까지 4분마다 게임 날자 변경
-    @Scheduled(cron = "0 0/4 10-21 * * 1-6")
+    @Scheduled(cron = "0/30 0 0-23 * * 1-7")
     public void chart_change(){
         log.info("[schedulerService] market(시즌) gameDate 변경");
         // 현재 진행중인 market 획득

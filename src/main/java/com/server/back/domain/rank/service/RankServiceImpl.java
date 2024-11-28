@@ -62,7 +62,7 @@ public class RankServiceImpl implements  RankService{
      */
     @Transactional
     @CachePut(value = "rank")
-    @Scheduled(cron = "0 0/4 10-22 * * 1-6",zone = "Asia/Seoul")
+    @Scheduled(cron = "0/30 0 0-23 * * 1-7",zone = "Asia/Seoul")
     public void calRanking(){
 
         //랭킹 레퍼지토리 전체 삭제
@@ -100,19 +100,19 @@ public class RankServiceImpl implements  RankService{
 
             //userAsset에 따른 금액 책정
             //unique
-            Integer uniqueCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.UNIQUE).orElse(0);
-            Long uniquePrice=assetPriceRepository.findByAssetLevel(AssetLevelType.UNIQUE).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
-            totalMoney+=(uniquePrice*uniqueCnt);
-
-            //epic
-            Integer epicCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.EPIC).orElse(0);
-            Long epicPrice=assetPriceRepository.findByAssetLevel(AssetLevelType.EPIC).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
-            totalMoney+=(epicPrice*epicCnt);
-
-            //rare
-            Integer rareCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.RARE).orElse(0);
-            Long rarePrice=assetPriceRepository.findByAssetLevel(AssetLevelType.RARE).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
-            totalMoney+=(rarePrice*rareCnt);
+//            Integer uniqueCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.UNIQUE).orElse(0);
+//            Long uniquePrice=assetPriceRepository.findByAssetLevel(AssetLevelType.UNIQUE).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
+//            totalMoney+=(uniquePrice*uniqueCnt);
+//
+//            //epic
+//            Integer epicCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.EPIC).orElse(0);
+//            Long epicPrice=assetPriceRepository.findByAssetLevel(AssetLevelType.EPIC).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
+//            totalMoney+=(epicPrice*epicCnt);
+//
+//            //rare
+//            Integer rareCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.RARE).orElse(0);
+//            Long rarePrice=assetPriceRepository.findByAssetLevel(AssetLevelType.RARE).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
+//            totalMoney+=(rarePrice*rareCnt);
 
 
             RankEntity rank=RankEntity.builder()
