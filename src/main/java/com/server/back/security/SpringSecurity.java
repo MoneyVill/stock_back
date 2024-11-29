@@ -41,6 +41,7 @@ public class SpringSecurity {
     @Bean
     WebSecurityCustomizer webSecurityCustomizer() {
 		return (web) -> web.ignoring()
+				.antMatchers("/ws/**")
 			.antMatchers("/static/css/**", "/static/js/**", "*.ico", "/images/**", "/js/**", "/webjars/**")
 			.antMatchers(
 				"/v2/api-docs", "/configuration/ui",
@@ -77,6 +78,7 @@ public class SpringSecurity {
 			// 로그인, 회원가입 API 는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정
 			.and()
 			.authorizeRequests()
+				.antMatchers("/ws/**").permitAll()
 			.antMatchers("/login/**", "/users/nickname/{nickname}", "/users/account/{account}", "/refresh").permitAll()
 			.antMatchers(HttpMethod.POST, "/users").permitAll()
 			.antMatchers("/swagger-resources/**", "/swagger-ui", "/swagger-ui/**").permitAll()
