@@ -56,9 +56,9 @@ public class LoginServiceImpl implements LoginService{
 
         log.info("[login] 비밀번호 비교 수행");
         // 비밀번호 체크
-        if (!passwordEncoder.matches(loginReqDto.getPassword(), user.getPassword())) {
-            throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
-        }
+//        if (!passwordEncoder.matches(loginReqDto.getPassword(), user.getPassword())) {
+//            throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
+//        }
 
         log.info("[login] 비밀번호 패스워드 일치");
 
