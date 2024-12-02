@@ -22,7 +22,8 @@ public enum DealType implements TypeModel{
     LOSE_MONEY_FOR_TRANSFER("송금에서 돈 주기"),
     LOSE_MONEY_FOR_BLOTTO("스피드 복권 사기"),
     LOSE_MONEY_FOR_DLOTTO("어둠의 복권 사기"),
-    GET_MONEY_FOR_QUIZ("퀴즈 맞추고 돈 얻기"); //퀴즈 기능을 위해 추가
+    GET_MONEY_FOR_QUIZ("퀴즈 맞추고 돈 얻기"),
+    PAY_TAX("세금 부과"); //퀴즈 기능을 위해 추가
 
     private final String description;
 

@@ -28,4 +28,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     List<UserEntity> findAllByIsDeleted(IsDeleted isDeleted);
 
+    IsDeleted isDeleted(IsDeleted isDeleted);
 }

@@ -8,5 +8,10 @@ import java.util.Optional;
 
 public interface RankRepository extends JpaRepository<RankEntity,Long> {
     List<RankEntity> findTop10ByOrderByTotalMoneyDesc();
+
+    // Top 3 추가
+    List<RankEntity> findTop3ByOrderByTotalMoneyDesc();
+
+
     Optional<RankEntity> findByNickname(String nickname);
 }

@@ -6,6 +6,7 @@ import com.server.back.common.code.commonCode.IsCompleted;
 import com.server.back.common.code.commonCode.IsDeleted;
 import com.server.back.domain.bank.repository.BankRepository;
 import com.server.back.domain.rank.dto.RankResDto;
+import com.server.back.domain.rank.dto.TaxDetailsDto;
 import com.server.back.domain.rank.entity.RankEntity;
 import com.server.back.domain.rank.repository.RankRepository;
 import com.server.back.domain.stock.entity.MarketEntity;
@@ -17,22 +18,28 @@ import com.server.back.domain.store.repository.UserAssetRepository;
 import com.server.back.domain.user.entity.UserEntity;
 import com.server.back.domain.user.repository.UserRepository;
 import com.server.back.exception.CustomException;
+import com.server.back.exception.DbDataWebSocketHandler;
 import com.server.back.exception.ErrorCode;
+import com.server.back.exception.TaxWebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springfox.documentation.annotations.Cacheable;
+import com.server.back.common.code.commonCode.DealType;
+import com.server.back.common.repository.DealRepository;
+import com.server.back.common.entity.DealEntity;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
-@Slf4j
-@Service
 @RequiredArgsConstructor
-public class RankServiceImpl implements  RankService{
+@Service
+@Slf4j
+public class RankServiceImpl implements RankService {
 
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
@@ -41,89 +48,63 @@ public class RankServiceImpl implements  RankService{
     private final BankRepository bankRepository;
     private final UserAssetRepository userAssetRepository;
     private final AssetPriceRepository assetPriceRepository;
+    private final DealRepository dealRepository;
+    private final TaxService taxService; // TaxService 추가
 
-    /**
-     * 랭킹 가져오기
-     *
-     * @return
-     */
     @Override
-    @Cacheable(value = "rank")
     public List<RankResDto> getRanking() {
-        List<RankEntity>list=rankRepository.findTop10ByOrderByTotalMoneyDesc();
-        return RankResDto.fromEntityList(list);
+        List<RankEntity> rankEntities = rankRepository.findTop10ByOrderByTotalMoneyDesc();
+        List<RankResDto> rankList = RankResDto.fromEntityList(rankEntities);
+
+        return rankList;
     }
 
+    // 사용자 총 자산 계산
+    private Long calculateTotalMoney(UserEntity user) {
+        Long totalMoney = user.getCurrentMoney();
 
-    /**
-     * 랭킹 세우는 로직
-     * 한 시간에 한 번 계산
-     *
-     */
+        MarketEntity market = marketRepository.findTopByOrderByCreatedAtDesc()
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        Long marketId = market.getId();
+        List<UserDealEntity> stockList = userDealRepository.findAllByUserAndStockMarketId(user, marketId);
+
+        for (UserDealEntity userDeal : stockList) {
+            int amount = userDeal.getTotalAmount();
+            Float average = userDeal.getAverage();
+            Float rate = userDeal.getRate();
+            Float plusMoney = ((100 + rate) / 100) * average * amount;
+            totalMoney += plusMoney.longValue();
+        }
+
+        totalMoney += bankRepository.getPriceSumByUserIdAndIsCompleted(user.getId(), IsCompleted.N).orElse(0L);
+        return totalMoney;
+    }
+
     @Transactional
     @CachePut(value = "rank")
-    @Scheduled(cron = "0/30 0/1 0/1 * * 1-7",zone = "Asia/Seoul")
-    public void calRanking(){
-        log.error("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        //랭킹 레퍼지토리 전체 삭제
+    @Scheduled(cron = "0 0/1 * * * *", zone = "Asia/Seoul") // 매 1분마다 실행
+    public void calRanking() {
+        log.info("[RankService] 랭킹 계산 시작");
+
+        // 세금 부과 및 저장
+        taxService.applyTaxToTopUsers();
+
+        // 랭킹 초기화
         rankRepository.deleteAll();
 
-        //탈퇴하지 않은 모든 유저에 대해서
-        List<UserEntity> everyUser=userRepository.findAllByIsDeleted(IsDeleted.N);
-        for (UserEntity user: everyUser) {
-            //로직 구현
-            Long totalMoney = 0L;
-
-            //현금
-            totalMoney+=user.getCurrentMoney();
-
-            //주식
-            //현재 장 가지고 오기
-            MarketEntity market =marketRepository.findTopByOrderByCreatedAtDesc().orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND));
-            LocalDate date=market.getGameDate();
-            Long marketId=market.getId();
-
-            List<UserDealEntity>stockList=userDealRepository.findAllByUserAndStockMarketId(user,marketId);
-
-            for (UserDealEntity userDeal:stockList) {
-                int amount=userDeal.getTotalAmount();
-                Float average=userDeal.getAverage();
-                Float rate=userDeal.getRate();
-                Float plusMoney=((100+rate)/100)*average*amount;
-                totalMoney+=plusMoney.longValue();
-            }
-
-            //예금에 있는 거
-            Long bankMoney = bankRepository.getPriceSumByUserIdAndIsCompleted(user.getId(), IsCompleted.N).orElse(0L);
-            totalMoney+=bankMoney;
-
-
-            //userAsset에 따른 금액 책정
-            //unique
-//            Integer uniqueCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.UNIQUE).orElse(0);
-//            Long uniquePrice=assetPriceRepository.findByAssetLevel(AssetLevelType.UNIQUE).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
-//            totalMoney+=(uniquePrice*uniqueCnt);
-//
-//            //epic
-//            Integer epicCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.EPIC).orElse(0);
-//            Long epicPrice=assetPriceRepository.findByAssetLevel(AssetLevelType.EPIC).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
-//            totalMoney+=(epicPrice*epicCnt);
-//
-//            //rare
-//            Integer rareCnt=userAssetRepository.countByUserIdAndIsDeletedAndAssetLevel(user.getId(),IsDeleted.N, AssetLevelType.RARE).orElse(0);
-//            Long rarePrice=assetPriceRepository.findByAssetLevel(AssetLevelType.RARE).orElseThrow(()->new CustomException(ErrorCode.ENTITY_NOT_FOUND)).getPrice();
-//            totalMoney+=(rarePrice*rareCnt);
-
-
-            RankEntity rank=RankEntity.builder()
+        // 사용자 자산 계산 및 저장
+        List<UserEntity> everyUser = userRepository.findAllByIsDeleted(IsDeleted.N);
+        for (UserEntity user : everyUser) {
+            Long totalMoney = calculateTotalMoney(user);
+            RankEntity rank = RankEntity.builder()
                     .nickname(user.getNickname())
                     .totalMoney(totalMoney)
                     .profileImagePath(user.getProfileImagePath())
                     .build();
-
             rankRepository.save(rank);
-
+            log.info("[RankService] 사용자: {}, 총 자산: {}", user.getNickname(), totalMoney);
         }
 
+        log.info("[RankService] 랭킹 계산 완료.");
     }
 }
