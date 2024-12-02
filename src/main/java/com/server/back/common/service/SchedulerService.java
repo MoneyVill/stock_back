@@ -40,7 +40,7 @@ public class SchedulerService {
 
     // 새로운 장(시즌) 생성 : 월, 수, 금 오전 9시에 새로운 장(시즌) 선택
     // - 주식 분할 시기가 있을 경우의 처리 필요
-    @Scheduled(cron = "0 0 0 * * 1-7")
+    @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void market_select() {
         log.info("[schedulerService] 새로운 market(시즌) 선택");
@@ -154,7 +154,7 @@ public class SchedulerService {
     }
 
     // 장 마감 : 화, 목, 토 오후 10시 10분에 모든 주식 처분
-    @Scheduled(cron = "0 0 23 * * 1-7")
+    @Scheduled(cron = "0 58 * * * *")
     public void market_end() {
         log.info("[schedulerService] market(시즌) 마감 - 가지고 있는 모든 주식 판매");
         MarketEntity marketEntity = marketRepository.findTopByOrderByCreatedAtDesc().orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -213,7 +213,7 @@ public class SchedulerService {
     }
 
     // 날짜 변경 : 월~토 10시 ~ 22시까지 4분마다 게임 날자 변경
-    @Scheduled(cron = "0/30 0/1 0-23 * * 1-7")
+    @Scheduled(cron = "0/30 0-58 * * * *")
     public void chart_change(){
         log.info("[schedulerService] market(시즌) gameDate 변경");
         // 현재 진행중인 market 획득

@@ -82,7 +82,7 @@ public class RankServiceImpl implements RankService {
 
     @Transactional
     @CachePut(value = "rank")
-    @Scheduled(cron = "0 0/1 * * * *", zone = "Asia/Seoul") // 매 1분마다 실행
+    @Scheduled(cron = "0/30 0-58 * * * *", zone = "Asia/Seoul") // 매 1분마다 실행
     public void calRanking() {
         log.info("[RankService] 랭킹 계산 시작");
 
