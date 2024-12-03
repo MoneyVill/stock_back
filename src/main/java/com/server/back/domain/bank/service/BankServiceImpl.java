@@ -34,7 +34,7 @@ public class BankServiceImpl implements BankService {
     private final UserService userService;
 
     // 3시간이후 이자 지급
-    public static Integer BANK_PERIOD = 3;
+    public static Integer BANK_PERIOD = 20;
 
     /**
      * 예금하기

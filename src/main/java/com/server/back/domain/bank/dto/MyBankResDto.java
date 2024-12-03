@@ -24,7 +24,7 @@ public class MyBankResDto {
         // 기본으로 은행에 넣었던 돈 얻기
         Long getMoney = bank.getPrice();
         // 만기일
-        LocalDateTime endDate = bank.getCreatedAt().plusHours(BANK_PERIOD);
+        LocalDateTime endDate = bank.getCreatedAt().plusMinutes(BANK_PERIOD);
 
         // 이자 지급 여부
         Boolean isPaid = false;
