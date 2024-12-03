@@ -84,6 +84,12 @@ public class RankServiceImpl implements RankService {
     @CachePut(value = "rank")
     @Scheduled(cron = "0/30 0-58 * * * *", zone = "Asia/Seoul") // 매 1분마다 실행
     public void calRanking() {
+        Optional<MarketEntity> marketEntityOptional = marketRepository.findTopByOrderByCreatedAtDesc();
+        if (marketEntityOptional.isEmpty()) {
+            log.info("실행하고 아직 정각이 안되서 장이 시작이 안됨.");
+            return;
+        }
+
         log.info("[RankService] 랭킹 계산 시작");
 
         // 세금 부과 및 저장

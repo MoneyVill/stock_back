@@ -48,7 +48,7 @@ public class SchedulerService {
         LocalDate pivot = LocalDate.of(2024, 1, 1);
         LocalDate start = LocalDate.of(2024, 1, 1);
         LocalDate end = LocalDate.of(2024, 10, 31);
-        LocalDate gamestart = LocalDate.of(2024, 6, 1);
+        LocalDate gamestart = LocalDate.of(2024, 1, 1);
         // 주식 데이터가 2022년 12월 29일로 끝 -> 360개의 데이터를 얻기 위해
         // 2021년 7월 16일부터 시작해야함.
         // LocalDate end = LocalDate.of(2021, 7, 16);
@@ -116,14 +116,14 @@ public class SchedulerService {
         // 전체 회사 목록 중 4가지 선택
         List<CompanyEntity> companyList = companyRepository.findAll();
         Set<Integer> indexSet = new HashSet<>();
-//        while(indexSet.size() < 4){
-//            int rand = (int) (Math.random() * companyList.size());
-//            indexSet.add(rand);
-//        }
-        indexSet.add(0);
-        indexSet.add(1);
-        indexSet.add(3);
-        indexSet.add(9);
+        while(indexSet.size() < 4){
+            int rand = (int) (Math.random() * companyList.size());
+            indexSet.add(rand);
+        }
+//        indexSet.add(0);
+//        indexSet.add(1);
+//        indexSet.add(3);
+//        indexSet.add(9);
         // log.info("[schedulerService] new indexSet : " + indexSet);
         for(int index : indexSet){
             // 생성할 회사
@@ -156,6 +156,11 @@ public class SchedulerService {
     // 장 마감 : 화, 목, 토 오후 10시 10분에 모든 주식 처분
     @Scheduled(cron = "0 58 * * * *")
     public void market_end() {
+        Optional<MarketEntity> marketEntityOptional = marketRepository.findTopByOrderByCreatedAtDesc();
+        if (marketEntityOptional.isEmpty()) {
+            log.info("실행하고 아직 정각이 안되서 장이 시작이 안됨.");
+            return;
+        }
         log.info("[schedulerService] market(시즌) 마감 - 가지고 있는 모든 주식 판매");
         MarketEntity marketEntity = marketRepository.findTopByOrderByCreatedAtDesc().orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
         LocalDate now = LocalDate.now();
@@ -215,6 +220,11 @@ public class SchedulerService {
     // 날짜 변경 : 월~토 10시 ~ 22시까지 4분마다 게임 날자 변경
     @Scheduled(cron = "0/30 0-58 * * * *")
     public void chart_change(){
+        Optional<MarketEntity> marketEntityOptional = marketRepository.findTopByOrderByCreatedAtDesc();
+        if (marketEntityOptional.isEmpty()) {
+            log.info("실행하고 아직 정각이 안되서 장이 시작이 안됨.");
+            return;
+        }
         log.info("[schedulerService] market(시즌) gameDate 변경");
         // 현재 진행중인 market 획득
         MarketEntity market = marketRepository.findTopByOrderByCreatedAtDesc().orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
