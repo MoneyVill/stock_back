@@ -16,14 +16,21 @@ public class StockChartResDto {
     Long id;
     Long companyId;
     Float changeRate;
+    Long stockHigh;
+    Long stockLow;
+    Long stockVolume;
 
     public static StockChartResDto fromEntity(ChartEntity chart) {
-        return StockChartResDto.builder().companyId(chart.getCompany().getId())
+        return StockChartResDto.builder()
+                .companyId(chart.getCompany().getId())
                 .priceEnd(chart.getPriceEnd())
                 .priceBefore(chart.getPriceBefore())
                 .date(chart.getDate())
                 .id(chart.getId())
                 .changeRate(chart.getChangeRate())
+                .stockHigh(chart.getStockHigh())
+                .stockLow(chart.getStockLow())
+                .stockVolume(chart.getStockVolume())
                 .build();
     }
     public static List<StockChartResDto> fromEntityList(List<ChartEntity> chartList) {

@@ -38,5 +38,5 @@ out/
 .vscode/
 .env
 
-# Allow application.properties
-src/main/resources/application.properties
+# Ignore application.properties
+/src/main/resources/application.properties
