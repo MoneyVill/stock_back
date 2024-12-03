@@ -4,6 +4,7 @@ import com.server.back.common.code.commonCode.IsDeleted;
 import com.server.back.common.util.AssetCalculator;
 import com.server.back.domain.rank.entity.RankEntity;
 import com.server.back.domain.rank.repository.RankRepository;
+import com.server.back.domain.stock.repository.UserDealRepository;
 import com.server.back.domain.tax.dto.TaxDetailsDto;
 import com.server.back.domain.tax.entity.TaxEntity;
 import com.server.back.domain.tax.repository.TaxRepository;
@@ -29,6 +30,7 @@ public class TaxServiceImpl implements TaxService {
     private final UserRepository userRepository;
     private final AssetCalculator assetCalculator;
     private final RankRepository rankRepository;
+    private final UserDealRepository userDealRepository;
 
     @Override
     @Transactional
@@ -47,7 +49,7 @@ public class TaxServiceImpl implements TaxService {
 
         for (UserEntity user : users) {
             // 사용자 세율 가져오기 (기본 세율 1%)
-            double taxRate = taxRates.getOrDefault(user.getNickname(), 0.01);
+            double taxRate = taxRates.getOrDefault(user.getNickname(), 0.001);
 
             // 자산 계산 및 세금 계산
             Long totalAssets = assetCalculator.calculateTotalAssets(user);
@@ -127,7 +129,7 @@ public class TaxServiceImpl implements TaxService {
 
     private Map<String, Double> calculateTaxRates() {
         Map<String, Double> taxRates = new HashMap<>();
-        double[] topRankRates = {0.10, 0.05, 0.02};
+        double[] topRankRates = {0.01, 0.005, 0.002};
 
         // 랭킹 가져오기
         List<RankEntity> rankings = rankRepository.findTop3ByOrderByTotalMoneyDesc();

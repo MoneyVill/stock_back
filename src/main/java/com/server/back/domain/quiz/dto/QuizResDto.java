@@ -15,4 +15,6 @@ public class QuizResDto {
     private boolean isCorrect;  //정답 여부
     @JsonProperty("prizeMoney")
     private Long prizeMoney;    //상금 금액
+    @JsonProperty("taxAmount")
+    private Long taxAmount;     // 세금 금액
 }
