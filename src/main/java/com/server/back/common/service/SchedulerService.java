@@ -178,7 +178,7 @@ public class SchedulerService {
         Map<Long, Long> chartPriceEndMap = new HashMap<>();
         for(StockEntity stockEntity : stockEntityList){
             Long companyId = stockEntity.getCompany().getId();
-            ChartEntity chartEntity = chartRepository.findTop360ByCompanyIdAndDateGreaterThanEqual(companyId, startDate).get(359);
+            ChartEntity chartEntity = chartRepository.findTop360ByCompanyIdAndDateGreaterThanEqual(companyId, startDate).get(202);
 
             chartPriceEndMap.put(stockEntity.getId(), chartEntity.getPriceEnd());
         }
