@@ -72,17 +72,17 @@ public class LoginServiceImpl implements LoginService{
 
         // refresh token Redis에 저장
 //        redisService.setDataExpireMilliseconds("RT:" + user.getId(), refreshToken, authTokenProvider.getExpiration(refreshToken));
-
-        // 하루 첫 로그인 인지 확인
-        LocalDateTime startDatetime = LocalDateTime.of(LocalDate.now(), LocalTime.of(0,0,0));
-        Optional<DealEntity> todayLoginUser = dealRepository.findByUserIdAndDealTypeAndCreatedAtGreaterThanEqual(user.getId(), DealType.GET_MONEY_FOR_DAILY, startDatetime);
-
-        if (todayLoginUser.isEmpty()) {
-            // 첫 로그인 이라면
-            dealRepository.save(new DealEntity(user, DealType.GET_MONEY_FOR_DAILY, DAILY_MONEY));
-            user.increaseCurrentMoney(DAILY_MONEY);
-            userRepository.save(user);
-        }
+//
+//        // 하루 첫 로그인 인지 확인
+//        LocalDateTime startDatetime = LocalDateTime.of(LocalDate.now(), LocalTime.of(0,0,0));
+//        Optional<DealEntity> todayLoginUser = dealRepository.findByUserIdAndDealTypeAndCreatedAtGreaterThanEqual(user.getId(), DealType.GET_MONEY_FOR_DAILY, startDatetime);
+//
+//        if (todayLoginUser.isEmpty()) {
+//            // 첫 로그인 이라면
+//            dealRepository.save(new DealEntity(user, DealType.GET_MONEY_FOR_DAILY, DAILY_MONEY));
+//            user.increaseCurrentMoney(DAILY_MONEY);
+//            userRepository.save(user);
+//    }
 
         // 토큰 body에 담아서 전달
         return LoginResDto.fromEntity(accessToken, refreshToken, user.getNickname());
