@@ -14,6 +14,8 @@ public enum DealType implements TypeModel{
     GET_MONEY_FOR_TRANSFER("송금에서 돈 얻기"),
     GET_MONEY_FOR_BLOTTO("스피드에서 돈 얻기"),
     GET_MONEY_FOR_DLOTTO("어둠의 복권에서 돈 얻기"),
+    GET_MONEY_FOR_LOAN("대출에서 돈 얻기"),
+    LOSE_MONEY_FOR_LOAN("대출에서 돈 갚기"),
     LOSE_MONEY_FOR_STOCK("주식 사서 돈 까먹기"),
     LOSE_MONEY_FOR_AUCTION("경매에서 사서 돈 까먹기"),
     LOSE_MONEY_FOR_DEPOSIT("예금에 돈 넣기"),
