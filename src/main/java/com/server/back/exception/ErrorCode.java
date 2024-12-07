@@ -26,7 +26,7 @@ public enum ErrorCode {
 	LACK_OF_STOCK(BAD_REQUEST,"매도할 주식이 없습니다."),
 	IMPOSSIBLE_FUNCTION(BAD_REQUEST, "가입 후 3시간 뒤 이용할 수 있는 기능입니다."),
 	IMPOSSIBLE_TRANSFER(BAD_REQUEST, "가입 후 3시간이 지난 사용자에게 송금할 수 있습니다."),
-
+	LOAN_LIMIT_EXCEEDED(BAD_REQUEST,"대출 한도는 2천만원을 초과할 수 없습니다."),
 
 	/* 401 UNAUTHORIZED : 권한 인증 문제. JWT 토큰과 관련된 에러 */
 	UNAUTHORIZED_USER(UNAUTHORIZED, "권한이 허용되지 않은 유저입니다."),

@@ -48,7 +48,7 @@ public class SchedulerService {
         LocalDate pivot = LocalDate.of(2024, 1, 1);
         LocalDate start = LocalDate.of(2024, 1, 1);
         LocalDate end = LocalDate.of(2024, 10, 31);
-        LocalDate gamestart = LocalDate.of(2024, 1, 1);
+        LocalDate gamestart = LocalDate.of(2024, 5, 1);
         // 주식 데이터가 2022년 12월 29일로 끝 -> 360개의 데이터를 얻기 위해
         // 2021년 7월 16일부터 시작해야함.
         // LocalDate end = LocalDate.of(2021, 7, 16);
@@ -178,7 +178,7 @@ public class SchedulerService {
         Map<Long, Long> chartPriceEndMap = new HashMap<>();
         for(StockEntity stockEntity : stockEntityList){
             Long companyId = stockEntity.getCompany().getId();
-            ChartEntity chartEntity = chartRepository.findTop360ByCompanyIdAndDateGreaterThanEqual(companyId, startDate).get(359);
+            ChartEntity chartEntity = chartRepository.findTop360ByCompanyIdAndDateGreaterThanEqual(companyId, startDate).get(202);
 
             chartPriceEndMap.put(stockEntity.getId(), chartEntity.getPriceEnd());
         }
