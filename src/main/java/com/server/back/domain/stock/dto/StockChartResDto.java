@@ -19,6 +19,7 @@ public class StockChartResDto {
     Long stockHigh;
     Long stockLow;
     Long stockVolume;
+    Long stockDividend;
 
     public static StockChartResDto fromEntity(ChartEntity chart) {
         return StockChartResDto.builder()
@@ -31,6 +32,7 @@ public class StockChartResDto {
                 .stockHigh(chart.getStockHigh())
                 .stockLow(chart.getStockLow())
                 .stockVolume(chart.getStockVolume())
+                .stockDividend(chart.getStockDividend())
                 .build();
     }
     public static List<StockChartResDto> fromEntityList(List<ChartEntity> chartList) {

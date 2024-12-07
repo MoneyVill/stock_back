@@ -50,6 +50,9 @@ public class ChartEntity {
     @Column(nullable = false)
     private Long stockVolume;
 
+    @Column(nullable = false)
+    private Long stockDividend;
+
     public void buy(Integer amount){
         this.buy += amount;
         this.changeRate = (float) (1+((buy-sell)/100)*0.00001);
