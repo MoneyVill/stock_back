@@ -2,6 +2,7 @@ package com.server.back.domain.tax.service;
 
 import com.server.back.common.code.commonCode.IsDeleted;
 import com.server.back.common.util.AssetCalculator;
+import com.server.back.domain.notification.websocket.NotificationWebSocketHandler;
 import com.server.back.domain.rank.entity.RankEntity;
 import com.server.back.domain.rank.repository.RankRepository;
 import com.server.back.domain.stock.repository.UserDealRepository;
@@ -31,6 +32,7 @@ public class TaxServiceImpl implements TaxService {
     private final AssetCalculator assetCalculator;
     private final RankRepository rankRepository;
     private final UserDealRepository userDealRepository;
+    private final NotificationWebSocketHandler notificationHandler;
 
     @Override
     @Transactional
@@ -64,6 +66,9 @@ public class TaxServiceImpl implements TaxService {
 
             log.info("[TaxService] 사용자: {}, 자산: {}, 세율: {}%, 부과된 세금: {}",
                     user.getNickname(), totalAssets, taxRate * 100, taxAmount);
+
+            // **알림 전송 추가**
+            notificationHandler.sendTaxNotification(user.getNickname(), taxAmount);
         }
 
         log.info("[TaxService] 자산세 부과 완료");

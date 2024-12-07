@@ -3,6 +3,7 @@ package com.server.back.domain.quiz.service;
 import com.server.back.common.entity.DealEntity;
 import com.server.back.common.repository.DealRepository;
 import com.server.back.common.service.AuthService;
+import com.server.back.domain.notification.service.NotificationService;
 import com.server.back.domain.quiz.dto.QuizResDto;
 import com.server.back.domain.tax.service.TaxService;
 import com.server.back.domain.user.entity.UserEntity;
@@ -25,6 +26,7 @@ public class QuizServiceImpl implements QuizService{
     private final DealRepository dealRepository;
     private final AuthService authService;
     private final TaxService taxService; // TaxService 추가
+    private final NotificationService notificationService;
 
     @Transactional
     @Override
@@ -52,6 +54,10 @@ public class QuizServiceImpl implements QuizService{
 
             // 세금 내역 저장
             taxService.saveTax(user.getNickname(), 0L, taxAmount, 0L);
+
+            // 알림 전송
+            String message = String.format("퀴즈 정답! 상금: %,d원, 세금: %,d원이 차감되었습니다.", prizeMoney, taxAmount);
+            notificationService.sendNotification(user.getNickname(), message);
 
             log.info("Quiz Tax Applied: User: {}, Prize: {}, Tax: {}", user.getNickname(), prizeMoney, taxAmount);
 
