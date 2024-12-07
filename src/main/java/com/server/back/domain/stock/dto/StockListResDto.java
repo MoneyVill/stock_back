@@ -12,9 +12,10 @@ public class StockListResDto {
     Long stockId;
     String kind;
     Long price;
+    String companyName;
 
     public static StockListResDto fromEntity(StockEntity stock) {
-        return StockListResDto.builder().stockId(stock.getId()).kind(stock.getCompany().getKind()).price(50000L).build();
+        return StockListResDto.builder().stockId(stock.getId()).kind(stock.getCompany().getKind()).price(50000L).companyName(stock.getCompany().getName()).build();
     }
 
     public static List<StockListResDto> fromEntityList(List<StockEntity> stockList) {
