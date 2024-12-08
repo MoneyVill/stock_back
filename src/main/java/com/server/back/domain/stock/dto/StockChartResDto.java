@@ -42,15 +42,23 @@ public class StockChartResDto {
             if (prev == null) {
                 result.add(StockChartResDto.fromEntity(curr));
             } else {
-                Long calculatedPriceEnd = prev.getChangeRate() > 0 ? (long) (curr.getPriceEnd() * prev.getChangeRate()) : curr.getPriceEnd();
+                Long calculatedPriceEnd = (prev.getChangeRate() != null && prev.getChangeRate() > 0)
+                        ? (long) ((curr.getPriceEnd() != null ? curr.getPriceEnd() : 0) * prev.getChangeRate())
+                        : (curr.getPriceEnd() != null ? curr.getPriceEnd() : 0);
+
                 StockChartResDto currDto = StockChartResDto.builder()
-                        .companyId(curr.getCompany().getId())
+                        .companyId(curr.getCompany() != null ? curr.getCompany().getId() : 0)
                         .priceEnd(calculatedPriceEnd)
-                        .priceBefore(curr.getPriceBefore())
-                        .date(curr.getDate())
-                        .id(curr.getId())
-                        .changeRate(curr.getChangeRate())
+                        .priceBefore(curr.getPriceBefore() != null ? curr.getPriceBefore() : 0)
+                        .date(curr.getDate() != null ? curr.getDate() : LocalDate.now())
+                        .id(curr.getId() != null ? curr.getId() : 0)
+                        .changeRate(curr.getChangeRate() != null ? curr.getChangeRate() : 0)
+                        .stockHigh(curr.getStockHigh() != null ? curr.getStockHigh() : 0)
+                        .stockLow(curr.getStockLow() != null ? curr.getStockLow() : 0)
+                        .stockVolume(curr.getStockVolume() != null ? curr.getStockVolume() : 0)
+                        .stockDividend(curr.getStockDividend() != null ? curr.getStockDividend() : 0)
                         .build();
+
                 result.add(currDto);
             }
             prev = curr;
