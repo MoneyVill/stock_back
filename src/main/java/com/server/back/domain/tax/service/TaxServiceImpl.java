@@ -1,3 +1,4 @@
+
 package com.server.back.domain.tax.service;
 
 import com.server.back.common.code.commonCode.IsDeleted;
@@ -55,6 +56,17 @@ public class TaxServiceImpl implements TaxService {
 
             // 자산 계산 및 세금 계산
             Long totalAssets = assetCalculator.calculateTotalAssets(user);
+
+            // 자산이 음수면 세금 부과하지 않음
+            if (totalAssets <= 0) {
+                log.info("[TaxService] 사용자: {}, 총 자산이 0 이하로 세금 부과 제외", user.getNickname());
+
+                // 알림 전송: 음수 또는 0 자산 상태 알림
+                notificationHandler.sendNotification(user.getNickname(),
+                        String.format("현재 자산이 %d원으로, 자산세가 부과되지 않았습니다.", totalAssets));
+                continue;
+            }
+
             Long taxAmount = Math.round(totalAssets * taxRate);
 
             // 사용자 자산 차감
