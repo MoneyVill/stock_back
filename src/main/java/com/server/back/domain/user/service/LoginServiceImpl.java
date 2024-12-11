@@ -9,6 +9,7 @@ import com.server.back.common.service.AuthTokenProvider;
 import com.server.back.common.service.RedisService;
 import com.server.back.domain.user.dto.LoginReqDto;
 import com.server.back.domain.user.dto.LoginResDto;
+import com.server.back.domain.user.dto.UsersRegisterReqDto;
 import com.server.back.domain.user.entity.UserEntity;
 import com.server.back.domain.user.repository.UserRepository;
 import com.server.back.exception.CustomException;
@@ -38,6 +39,7 @@ public class LoginServiceImpl implements LoginService{
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
     private final AuthService authService;
+    private final UserService userService;
 
     private static final Long DAILY_MONEY = 3_000_000L; // 하루 첫 로그인 300만원 지급 받음
 
@@ -51,8 +53,28 @@ public class LoginServiceImpl implements LoginService{
     @Override
     @Transactional
     public LoginResDto login(LoginReqDto loginReqDto, HttpServletResponse response) {
-        // 유저가 존재하지 않을 때 혹은 탈퇴한 유저 일때 error 발생
-        UserEntity user = userRepository.findByAccountAndIsDeleted(loginReqDto.getAccount(), IsDeleted.N).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        // 유저가 존재하는지 확인
+        Optional<UserEntity> userOptional = userRepository.findByAccountAndIsDeleted(loginReqDto.getAccount(), IsDeleted.N);
+
+        UserEntity user;
+        if (userOptional.isEmpty()) {
+            // 유저가 존재하지 않는 경우 회원가입 처리
+            UsersRegisterReqDto usersRegisterReqDto = UsersRegisterReqDto.builder()
+                    .account(loginReqDto.getAccount())
+                    .password(passwordEncoder.encode(loginReqDto.getPassword())) // 패스워드 암호화
+                    .nickname(loginReqDto.getAccount()) // 기본 닉네임은 계정으로 설정
+                    .build();
+
+            // 회원가입 서비스 호출
+            userService.createUser(usersRegisterReqDto);
+
+            // 방금 생성한 유저 엔티티를 가져옴
+            user = userRepository.findByAccountAndIsDeleted(loginReqDto.getAccount(), IsDeleted.N)
+                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        } else {
+            // 유저가 존재하는 경우
+            user = userOptional.get();
+        }
 
         log.info("[login] 비밀번호 비교 수행");
         // 비밀번호 체크
