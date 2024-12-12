@@ -51,7 +51,7 @@ public class TaxServiceImpl implements TaxService {
 
         for (UserEntity user : users) {
             // 사용자 세율 가져오기 (기본 세율 1%)
-            double taxRate = taxRates.getOrDefault(user.getNickname(), 0.001);
+            double taxRate = taxRates.getOrDefault(user.getNickname(), 0.0001);
 
             // 자산 계산 및 세금 계산
             Long totalAssets = assetCalculator.calculateTotalAssets(user);
@@ -119,7 +119,7 @@ public class TaxServiceImpl implements TaxService {
         // 예상 세금 계산
         return users.stream()
                 .map(user -> {
-                    double taxRate = taxRates.getOrDefault(user.getNickname(), 0.01);
+                    double taxRate = taxRates.getOrDefault(user.getNickname(), 0.0001);
                     Long totalAssets = assetCalculator.calculateTotalAssets(user);
                     Long taxAmount = Math.round(totalAssets * taxRate);
 
@@ -134,7 +134,7 @@ public class TaxServiceImpl implements TaxService {
 
     private Map<String, Double> calculateTaxRates() {
         Map<String, Double> taxRates = new HashMap<>();
-        double[] topRankRates = {0.01, 0.005, 0.002};
+        double[] topRankRates = {0.001, 0.0005, 0.0002};
 
         // 랭킹 가져오기
         List<RankEntity> rankings = rankRepository.findTop3ByOrderByTotalMoneyDesc();
