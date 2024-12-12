@@ -154,7 +154,7 @@ public class SchedulerService {
     }
 
     // 장 마감 : 화, 목, 토 오후 10시 10분에 모든 주식 처분
-    @Scheduled(cron = "0 58 * * * *")
+    @Scheduled(cron = "45 59 * * * *")
     public void market_end() {
         Optional<MarketEntity> marketEntityOptional = marketRepository.findTopByOrderByCreatedAtDesc();
         if (marketEntityOptional.isEmpty()) {
@@ -218,7 +218,7 @@ public class SchedulerService {
     }
 
     // 날짜 변경 : 월~토 10시 ~ 22시까지 4분마다 게임 날자 변경
-    @Scheduled(cron = "0/30 0-58 * * * *")
+    @Scheduled(cron = "0/30 0-59 * * * *")
     public void chart_change(){
         Optional<MarketEntity> marketEntityOptional = marketRepository.findTopByOrderByCreatedAtDesc();
         if (marketEntityOptional.isEmpty()) {
